@@ -3,6 +3,7 @@
 // @namespace     https://github.com/chokiproai/Youtube-Premium
 // @description	  Changer For Youtube To Premium
 // @author       Chokiproai
+// @icon         https://www.google.com/s2/favicons?domain=youtube.com
 // @license       MIT
 // @match        https://*.youtube.com/*
 // @match        https://*.youtube.com/watch?v=*
