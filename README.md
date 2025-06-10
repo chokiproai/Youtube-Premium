@@ -35,10 +35,10 @@ To install the script, click the following link:
 
 ---
 
-## Youtube Premium ADB
+## YouTube + Music Premium ADB
 
 > [!NOTE]
 > Uses [uBlock Origin](https://ublockorigin.com/) | [Chrome-ium](https://chromewebstore.google.com/detail/ublock-origin/cjpalhdlnbpafiamejdnhcphjbkeiagm) | [Firefox](https://addons.mozilla.org/en-US/firefox/addon/ublock-origin). For chrome-ium users, due to deprecated v2 manifest, use [uBO Lite](https://chromewebstore.google.com/detail/ublock-origin-lite/ddkjiahejlhfcafbddmgiahcphecmpfh) instead.
 
 To install the script, click the following link:
-### [Install Logo Script](https://github.com/chokiproai/Youtube-Premium/raw/refs/heads/main/Youtube-Premium-ADB.user.js)
+### [Install ADB Script](https://github.com/chokiproai/Youtube-Premium/raw/refs/heads/main/Youtube-Premium-ADB.user.js)
