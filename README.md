@@ -1,9 +1,5 @@
 # YouTube Premium Logo
 
-## Description
-
-Userscript emulates YouTube Premium.
-
 > [!NOTE]
 > YouTube Premium logo if you are signed out.
 
