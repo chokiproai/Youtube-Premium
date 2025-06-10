@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         Youtube Premium
+// @name         Youtube Premium Logo
 // @namespace     https://github.com/chokiproai/Youtube-Premium
 // @description	  Changer For Youtube To Premium
 // @author       Chokiproai
