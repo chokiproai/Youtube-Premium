@@ -16,140 +16,116 @@
 // @license MIT
 // ==/UserScript==
 
-(function () {
+(function() {
     'use strict';
 
-    const isYouTubeMobile = location.hostname === 'm.youtube.com';
-    const isYouTubeMusic = location.hostname === 'music.youtube.com';
-    const isYouTubeVideo = !isYouTubeMusic;
-    const cssSelectorArr = [
-        '#masthead-ad',
-        'ytd-rich-item-renderer.style-scope.ytd-rich-grid-row #content:has(.ytd-display-ad-renderer)',
-        '.video-ads.ytp-ad-module',
-        'tp-yt-paper-dialog:has(yt-mealbar-promo-renderer)',
-        'ytd-engagement-panel-section-list-renderer[target-id="engagement-panel-ads"]',
-        '#related #player-ads',
-        '#related ytd-ad-slot-renderer',
-        'ytd-ad-slot-renderer',
-        'yt-mealbar-promo-renderer',
-        'ytd-popup-container:has(a[href="/premium"])',
-        'ad-slot-renderer',
-        'ytm-companion-ad-renderer'
-    ];
+    // --- User editable configuration ---
+    const CONFIG = {
+        // Set to `true` to show debug messages in the Console (Press F12).
+        // Useful when you want to see what the script is doing.
+        DEV_MODE: false,
 
-    const extraCssSelectors = [
-        '#player-ads',
-        '#panels > ytd-engagement-panel-section-list-renderer[target-id="engagement-panel-ads"]',
-        '.ytp-featured-product',
-        'ytd-merch-shelf-renderer',
-        'ytmusic-mealbar-promo-renderer',
-        'ytmusic-statement-banner-renderer'
-    ];
+        // The frequency of the redundancy check loop (in milliseconds).
+        // Lower values will react faster but may consume more resources.
+        // 300ms is a good balance.
+        FALLBACK_INTERVAL_MS: 300
+    };
 
-    const adSelectors = [
-        ['ytd-reel-video-renderer', '.ytd-ad-slot-renderer']
-    ];
+    const log = (message) => {
+        if (CONFIG.DEV_MODE) {
+            console.log(`[Super Ad-Bypasser] ${new Date().toLocaleTimeString()}: ${message}`);
+        }
+    };
 
-    function getCurrentTimeString() {
-        return new Date().toTimeString().split(' ', 1)[0];
-    }
+    const getAdSelectors = () => {
+        const selectors = [
+            '#masthead-ad', '.ytd-ad-slot-renderer', 'ytd-ad-slot-renderer',
+            'ytd-rich-item-renderer.style-scope.ytd-rich-grid-row #content:has(.ytd-display-ad-renderer)',
+            '#player-ads', '#related #player-ads',
+            'ytd-engagement-panel-section-list-renderer[target-id="engagement-panel-ads"]',
+            '.yt-mealbar-promo-renderer', 'yt-mealbar-promo-renderer', '.ytp-featured-product',
+            'ytd-merch-shelf-renderer', 'ytmusic-mealbar-promo-renderer', 'ytmusic-statement-banner-renderer',
+            'tp-yt-paper-dialog:has(yt-mealbar-promo-renderer)', 'ytm-companion-ad-renderer',
+            '.video-ads.ytp-ad-module', '.ytp-ad-text-overlay', '.ytp-ad-preview-container',
+            'ytd-enforcement-message-view-model', 'tp-yt-iron-overlay-backdrop',
+            'ytd-popup-container:has(a[href="/premium"])'
+        ];
+        return [...new Set(selectors)];
+    };
 
-    function checkIsYouTubeShorts() {
-        return location.pathname.startsWith('/shorts/');
-    }
-
-    function addCss() {
-        const css = [...cssSelectorArr, ...extraCssSelectors].map(sel => `${sel} { display: none !important; }`).join(' ');
+    const hideStaticAds = () => {
+        const styleId = 'ultimate-ad-bypasser-styles';
+        if (document.getElementById(styleId)) return;
+        const css = `${getAdSelectors().join(', ')} { display: none !important; }`;
         const style = document.createElement('style');
+        style.id = styleId;
         style.textContent = css;
-        document.head.appendChild(style);
-    }
+        (document.head || document.documentElement).appendChild(style);
+    };
 
-    function removeAdElements() {
-        for (const adSelector of adSelectors) {
-            const adEl = document.querySelector(adSelector[0]);
-            if (!adEl) continue;
-            const neededEl = adEl.querySelector(adSelector[1]);
-            if (!neededEl) continue;
-            adEl.remove();
-        }
-    }
+    const handleVideoAds = () => {
+        if (location.pathname.startsWith('/shorts/')) return;
+        const video = document.querySelector('video.html5-main-video');
+        if (!video) return;
 
-    function skipAd() {
-        if (checkIsYouTubeShorts()) return;
-
-        const adShowing = document.querySelector('.ad-showing');
-        const pieCountdown = document.querySelector('.ytp-ad-timed-pie-countdown-container');
-        const surveyQuestions = document.querySelector('.ytp-ad-survey-questions');
-
-        if (!adShowing && !pieCountdown && !surveyQuestions) return;
-
-        let playerEl, player;
-        if (isYouTubeMobile || isYouTubeMusic) {
-            playerEl = document.querySelector('#movie_player');
-            player = playerEl;
-        } else {
-            playerEl = document.querySelector('#ytd-player');
-            player = playerEl && playerEl.getPlayer();
-        }
-
-        if (!playerEl || !player) {
-            console.log({ message: 'Player not found', timeStamp: getCurrentTimeString() });
+        const adShowing = document.querySelector('.ad-showing, .ytp-ad-preview-container');
+        if (adShowing && video.duration > 0.1 && !isNaN(video.duration)) {
+            if (video.currentTime < video.duration - 0.1) {
+                video.muted = true;
+                video.currentTime = video.duration;
+                log('Strategy 1: Fast-forwarded video ad.');
+            }
             return;
         }
 
-        let adVideo = null;
-        if (!pieCountdown && !surveyQuestions) {
-            adVideo = document.querySelector('#ytd-player video.html5-main-video, #song-video video.html5-main-video');
-            if (!adVideo || !adVideo.src || adVideo.paused || isNaN(adVideo.duration)) return;
+        const skipButton = document.querySelector([
+            '.ytp-ad-skip-button',
+            '.ytp-skip-ad-button',
+            '.ytp-ad-skip-button-modern'
+        ].join(', '));
+        if (skipButton) {
+            skipButton.click();
+            log('Strategy 2: Clicked "Skip Ad" button.');
         }
+    };
 
-        if (isYouTubeMusic && adVideo) {
-            adVideo.currentTime = adVideo.duration;
-        } else {
-            const videoData = player.getVideoData();
-            const videoId = videoData.video_id;
-            const start = Math.floor(player.getCurrentTime());
-
-            if ('loadVideoWithPlayerVars' in playerEl) {
-                playerEl.loadVideoWithPlayerVars({ videoId, start });
-            } else {
-                playerEl.loadVideoByPlayerVars({ videoId, start });
-            }
-        }
-    }
-
-    function observePopupRemoval() {
-        const removePop = node => {
-            const popup = node.querySelector('.ytd-popup-container > .ytd-popup-container > .ytd-enforcement-message-view-model');
-            if (popup) {
-                popup.parentNode.remove();
-                const bds = document.getElementsByTagName('tp-yt-iron-overlay-backdrop');
-                for (let i = bds.length; i--;) bds[i].remove();
-            }
-            if (node.tagName?.toLowerCase() === 'tp-yt-iron-overlay-backdrop') node.remove();
-        };
-
-        const obs = new MutationObserver(mutations => {
-            mutations.forEach(mutation => {
-                if (mutation.type === 'childList') {
-                    Array.from(mutation.addedNodes).filter(n => n.nodeType === 1).forEach(removePop);
+    const handleAntiAdBlockPopup = (node) => {
+        if (node.nodeType !== 1) return;
+        if (node.querySelector('ytd-enforcement-message-view-model') || node.tagName === 'YTD-ENFORCEMENT-MESSAGE-VIEW-MODEL') {
+            const popupContainer = node.closest('ytd-popup-container') || document.querySelector('ytd-popup-container');
+            if (popupContainer) {
+                popupContainer.remove();
+                log('Removed anti-adblock warning popup.');
+                const mainVideo = document.querySelector('video.html5-main-video');
+                if (mainVideo && mainVideo.paused) {
+                    mainVideo.play();
                 }
-            });
+            }
+        }
+    };
+
+    const initialize = () => {
+        log('Initializing Super YouTube Ad-Bypasser (Ultimate Edition)...');
+        hideStaticAds();
+        setInterval(handleVideoAds, CONFIG.FALLBACK_INTERVAL_MS);
+        const observer = new MutationObserver(mutations => {
+            for (const mutation of mutations) {
+                handleVideoAds();
+                if (mutation.addedNodes) {
+                    mutation.addedNodes.forEach(handleAntiAdBlockPopup);
+                }
+            }
         });
+        observer.observe(document.documentElement, {
+            childList: true,
+            subtree: true
+        });
+        log('Script initialized and now active.');
+    };
 
-        obs.observe(document.body, { childList: true, subtree: true });
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initialize);
+    } else {
+        initialize();
     }
-
-    // Run main logic
-    addCss();
-    observePopupRemoval();
-
-    if (isYouTubeVideo) {
-        window.setInterval(removeAdElements, 1000);
-        removeAdElements();
-    }
-
-    window.setInterval(skipAd, 500);
-    skipAd();
 })();
