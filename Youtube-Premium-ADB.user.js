@@ -23,19 +23,11 @@
     const CONFIG = {
         // Set to `true` to show debug messages in the Console (Press F12).
         // Useful when you want to see what the script is doing.
-        DEV_MODE: false,
-
-        // The frequency of the redundancy check loop (in milliseconds).
-        // Lower values will react faster but may consume more resources.
-        // 300ms is a good balance.
+        // 300ms is a good balance
         FALLBACK_INTERVAL_MS: 300
     };
 
-    const log = (message) => {
-        if (CONFIG.DEV_MODE) {
-            console.log(`[Super Ad-Bypasser] ${new Date().toLocaleTimeString()}: ${message}`);
-        }
-    };
+    const log = () => {};
 
     const getAdSelectors = () => {
         const selectors = [
@@ -105,7 +97,6 @@
     };
 
     const initialize = () => {
-        log('Initializing Super YouTube Ad-Bypasser (Ultimate Edition)...');
         hideStaticAds();
         setInterval(handleVideoAds, CONFIG.FALLBACK_INTERVAL_MS);
         const observer = new MutationObserver(mutations => {
@@ -120,7 +111,6 @@
             childList: true,
             subtree: true
         });
-        log('Script initialized and now active.');
     };
 
     if (document.readyState === 'loading') {
