@@ -41,6 +41,7 @@
 
 (function() {
     'use strict';
+    /* global trustedTypes */
     // --- COMMON SECTION: PATCHES ---
     // Fix "TrustedError" on Chrome[-ium], code snippet from zerodytrash
     if (window.trustedTypes && trustedTypes.createPolicy) {
@@ -163,14 +164,16 @@
             }
             
             // B. Remove the "Upgrade" button
+            const upgradePattern = /upgrade|nâng\s*cấp|アップグレード|升级|升級|обновить|aktualisier(?:en|ung)|mise\s*à\s*niveau|actualización|aggiorn(?:a|are)|uaktualnij|bijwerken|업그레이드|atualiza[cç][ãa]o|zur?ücksetzen|actualizare|opgradering|melhorar/i;
             if (!upgradeButtonRemoved) {
                 const guideEntries = document.querySelectorAll('ytmusic-guide-entry-renderer yt-formatted-string.title');
                 for (const entryTitle of guideEntries) {
-                    if (entryTitle.textContent.trim() === 'Upgrade') {
+                    const titleText = entryTitle.textContent.trim();
+                        if (upgradePattern.test(titleText)) {
                         const entryToRemove = entryTitle.closest('ytmusic-guide-entry-renderer');
-                        if (entryToRemove) {
+                            if (entryToRemove) {
                             entryToRemove.remove();
-                            upgradeButtonRemoved = true; // Mark task as done
+                            upgradeButtonRemoved = true;
                             break;
                         }
                     }
