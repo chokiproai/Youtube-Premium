@@ -20,10 +20,30 @@
     'use strict';
 
     const CONFIG = {
-        FALLBACK_INTERVAL_MS: 500
+        FALLBACK_INTERVAL_MS: 500,
+    // New: Compatibility mode. If enabled (true), the script will automatically
+    // disable if it detects another ad blocker is active.
+        COMPATIBILITY_MODE: true
     };
 
+    let isDisabled = false;
     let lastProcessedVideoSrc = null;
+
+    const detectExternalAdBlocker = () => {
+        if (!CONFIG.COMPATIBILITY_MODE) return;
+
+        const baitElement = document.createElement('div');
+        baitElement.className = 'pub_300x250 pub_300x250m pub_728x90 text-ad textAd text_ad text_ads text-ads text-ad-links';
+        baitElement.style.cssText = 'position:absolute; left:-9999px; top:-9999px; width:1px; height:1px;';
+        document.body.appendChild(baitElement);
+
+        setTimeout(() => {
+            if (baitElement.offsetHeight === 0 || getComputedStyle(baitElement).display === 'none') {
+                isDisabled = true;
+            }
+            baitElement.remove();
+        }, 100);
+    };
 
     const getAdSelectors = () => {
         const selectors = [
@@ -42,6 +62,7 @@
     };
 
     const hideStaticAds = () => {
+        if (isDisabled) return;
         const styleId = 'ultimate-ad-bypasser-styles';
         if (document.getElementById(styleId)) return;
         const css = `${getAdSelectors().join(', ')} { display: none !important; }`;
@@ -52,7 +73,7 @@
     };
 
     const handleVideoAds = () => {
-        if (location.pathname.startsWith('/shorts/')) return;
+        if (isDisabled || location.pathname.startsWith('/shorts/')) return;
         const video = document.querySelector('video.html5-main-video');
         const player = document.querySelector('#movie_player');
         if (!video || !player) return;
@@ -74,7 +95,7 @@
     };
 
     const handleAntiAdBlockPopup = (node) => {
-        if (node.nodeType !== 1) return;
+        if (isDisabled || node.nodeType !== 1) return;
         const enforcementMessage = node.querySelector('ytd-enforcement-message-view-model') || (node.tagName === 'YTD-ENFORCEMENT-MESSAGE-VIEW-MODEL' ? node : null);
         if (enforcementMessage) {
             const popupContainer = enforcementMessage.closest('ytd-popup-container');
@@ -93,12 +114,10 @@
     };
 
     const initializePlayer = (video) => {
-        if (!video.src || video.src === lastProcessedVideoSrc) {
+        if (isDisabled || !video.src || video.src === lastProcessedVideoSrc) {
             return;
         }
-        
         lastProcessedVideoSrc = video.src;
-
         const guardianInterval = setInterval(() => {
             const player = video.closest('#movie_player');
             if (!player || video.currentTime > 4 || video.src !== lastProcessedVideoSrc) {
@@ -107,7 +126,6 @@
             }
             const isAdPlaying = player.classList.contains('ad-interrupting');
             const isPausedByUser = player.classList.contains('paused-by-user');
-            
             if (video.paused && !isAdPlaying && !isPausedByUser) {
                 video.play();
             }
@@ -115,6 +133,7 @@
     };
 
     const mainLoop = () => {
+        if (isDisabled) return;
         handleVideoAds();
         const video = document.querySelector('video.html5-main-video');
         if (video) {
@@ -125,6 +144,7 @@
     };
 
     const initialize = () => {
+        detectExternalAdBlocker();
         hideStaticAds();
         const observer = new MutationObserver((mutations) => {
             mainLoop();
