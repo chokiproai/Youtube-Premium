@@ -4,7 +4,7 @@
 // @version      1.0
 // @description         A script to remove YouTube ads, including static ads and video ads, without interfering with the network and ensuring safety.
 // @match        *://*.youtube.com/*
-// @exclude      https://studio.youtube.com/*
+// @exclude      *://studio.youtube.com/*
 // @exclude      *://accounts.youtube.com/*
 // @exclude      *://www.youtube.com/live_chat_replay*
 // @exclude      *://www.youtube.com/persist_identity*
