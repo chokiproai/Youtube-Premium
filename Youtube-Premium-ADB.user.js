@@ -21,13 +21,15 @@
 
     // --- User editable configuration ---
     const CONFIG = {
-        // Set to `true` to show debug messages in the Console (Press F12).
-        // Useful when you want to see what the script is doing.
-        // 300ms is a good balance
+        // Frequency of loopback checks in the backup room (in milliseconds).
+        // Lower values ​​will reflect faster but may consume more resources.
+        // 300ms is a good balance.
         FALLBACK_INTERVAL_MS: 300
     };
 
     const log = () => {};
+
+    let adJustSkipped = false;
 
     const getAdSelectors = () => {
         const selectors = [
@@ -57,48 +59,67 @@
 
     const handleVideoAds = () => {
         if (location.pathname.startsWith('/shorts/')) return;
-        const video = document.querySelector('video.html5-main-video');
-        if (!video) return;
 
-        const adShowing = document.querySelector('.ad-showing, .ytp-ad-preview-container');
-        if (adShowing && video.duration > 0.1 && !isNaN(video.duration)) {
-            if (video.currentTime < video.duration - 0.1) {
-                video.muted = true;
-                video.currentTime = video.duration;
-                log('Strategy 1: Fast-forwarded video ad.');
-            }
+        const video = document.querySelector('video.html5-main-video');
+        const player = document.querySelector('#movie_player');
+        if (!video || !player) return;
+
+        const isAdPlaying = player.classList.contains('ad-interrupting');
+        
+        if (isAdPlaying && video.duration > 0.1 && !isNaN(video.duration) && video.currentTime < video.duration - 0.1) {
+            video.muted = true;
+            video.currentTime = video.duration;
+            adJustSkipped = true;
             return;
         }
 
-        const skipButton = document.querySelector([
-            '.ytp-ad-skip-button',
-            '.ytp-skip-ad-button',
-            '.ytp-ad-skip-button-modern'
-        ].join(', '));
+        const skipButton = document.querySelector('.ytp-ad-skip-button, .ytp-skip-ad-button, .ytp-ad-skip-button-modern');
         if (skipButton) {
             skipButton.click();
-            log('Strategy 2: Clicked "Skip Ad" button.');
+            adJustSkipped = true;
         }
     };
 
     const handleAntiAdBlockPopup = (node) => {
         if (node.nodeType !== 1) return;
-        if (node.querySelector('ytd-enforcement-message-view-model') || node.tagName === 'YTD-ENFORCEMENT-MESSAGE-VIEW-MODEL') {
-            const popupContainer = node.closest('ytd-popup-container') || document.querySelector('ytd-popup-container');
+        const enforcementMessage = node.querySelector('ytd-enforcement-message-view-model') || (node.tagName === 'YTD-ENFORCEMENT-MESSAGE-VIEW-MODEL' ? node : null);
+
+        if (enforcementMessage) {
+            const popupContainer = enforcementMessage.closest('ytd-popup-container');
             if (popupContainer) {
                 popupContainer.remove();
-                log('Removed anti-adblock warning popup.');
-                const mainVideo = document.querySelector('video.html5-main-video');
-                if (mainVideo && mainVideo.paused) {
-                    mainVideo.play();
-                }
+                
+                setTimeout(() => {
+                    const mainVideo = document.querySelector('video.html5-main-video');
+                    if (mainVideo && mainVideo.paused) {
+                        mainVideo.play();
+                    }
+                }, 100);
             }
+        }
+    };
+
+    const safeResumeAfterAd = () => {
+        if (!adJustSkipped) return;
+
+        const video = document.querySelector('video.html5-main-video');
+        const player = document.querySelector('#movie_player');
+        
+        if (video && player && !player.classList.contains('ad-interrupting')) {
+            if (video.paused) {
+                video.play();
+            }
+            adJustSkipped = false;
         }
     };
 
     const initialize = () => {
         hideStaticAds();
-        setInterval(handleVideoAds, CONFIG.FALLBACK_INTERVAL_MS);
+        setInterval(() => {
+            handleVideoAds();
+            safeResumeAfterAd();
+        }, CONFIG.FALLBACK_INTERVAL_MS);
+
         const observer = new MutationObserver(mutations => {
             for (const mutation of mutations) {
                 handleVideoAds();
@@ -106,7 +127,9 @@
                     mutation.addedNodes.forEach(handleAntiAdBlockPopup);
                 }
             }
+            safeResumeAfterAd();
         });
+
         observer.observe(document.documentElement, {
             childList: true,
             subtree: true
