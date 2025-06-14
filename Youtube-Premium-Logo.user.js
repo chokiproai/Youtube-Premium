@@ -5,35 +5,13 @@
 // @author       Chokiproai
 // @icon         https://www.google.com/s2/favicons?domain=youtube.com
 // @license       MIT
-// @match        https://*.youtube.com/*
-// @match        https://*.youtube.com/watch?v=*
-// @match        https://www.youtube.com/embed/*
-// @match        *://www.youtube.com/watch?v=*
-// @match        *://www.youtube.com
-// @match        *://www.youtube.com/
-// @match        *://www.youtube.com/watch*
-// @match        /^http(s?)://[^/]*\.youtube(\.com)?(\.[a-z][a-z])?/.*$/
-// @match        /^http(s?)://youtube(\.com)?(\.[a-z][a-z])?/.*$/
-// @match        http://youtube.com/*
-// @match        https://youtube.com/*
-// @match        http://*.youtube.com/*
-// @match        https://*.youtube.com/*
+
+// YouTube
 // @match        *://*.youtube.com/*
 
-// @match        https://*.music.youtube.com/*
-// @match        https://*.music.youtube.com/watch?v=*
-// @match        https://www.music.youtube.com/embed/*
-// @match        *://www.music.youtube.com/watch?v=*
-// @match        *://www.music.youtube.com
-// @match        *://www.music.youtube.com/
-// @match        *://www.music.youtube.com/watch*
-// @match        /^http(s?)://[^/]*\.music\.youtube(\.com)?(\.[a-z][a-z])?/.*$/
-// @match        /^http(s?)://music\.youtube(\.com)?(\.[a-z][a-z])?/.*$/
-// @match        http://music.youtube.com/*
-// @match        https://music.youtube.com/*
-// @match        http://*.music.youtube.com/*
-// @match        https://*.music.youtube.com/*
+// Music YouTube
 // @match        *://*.music.youtube.com/*
+
 // @version       1.0
 // @updateURL    https://github.com/chokiproai/Youtube-Premium/raw/refs/heads/main/Youtube-Premium-Logo.user.js
 // @downloadURL  https://github.com/chokiproai/Youtube-Premium/raw/refs/heads/main/Youtube-Premium-Logo.user.js
