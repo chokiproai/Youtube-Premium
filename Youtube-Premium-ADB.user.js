@@ -19,17 +19,11 @@
 (function() {
     'use strict';
 
-    // --- User editable configuration ---
     const CONFIG = {
-        // Frequency of loopback checks in the backup room (in milliseconds).
-        // Lower values ​​will reflect faster but may consume more resources.
-        // 300ms is a good balance.
-        FALLBACK_INTERVAL_MS: 300
+        FALLBACK_INTERVAL_MS: 500
     };
 
-    const log = () => {};
-
-    let adJustSkipped = false;
+    let lastProcessedVideoSrc = null;
 
     const getAdSelectors = () => {
         const selectors = [
@@ -59,36 +53,35 @@
 
     const handleVideoAds = () => {
         if (location.pathname.startsWith('/shorts/')) return;
-
         const video = document.querySelector('video.html5-main-video');
         const player = document.querySelector('#movie_player');
         if (!video || !player) return;
-
         const isAdPlaying = player.classList.contains('ad-interrupting');
-        
-        if (isAdPlaying && video.duration > 0.1 && !isNaN(video.duration) && video.currentTime < video.duration - 0.1) {
-            video.muted = true;
-            video.currentTime = video.duration;
-            adJustSkipped = true;
+        if (isAdPlaying && video.duration > 0.1 && !isNaN(video.duration)) {
+            if (video.currentTime < video.duration - 0.1) {
+                video.muted = true;
+                video.currentTime = video.duration;
+            }
+            if (video.paused) {
+                video.play();
+            }
             return;
         }
-
         const skipButton = document.querySelector('.ytp-ad-skip-button, .ytp-skip-ad-button, .ytp-ad-skip-button-modern');
         if (skipButton) {
             skipButton.click();
-            adJustSkipped = true;
         }
     };
 
     const handleAntiAdBlockPopup = (node) => {
         if (node.nodeType !== 1) return;
         const enforcementMessage = node.querySelector('ytd-enforcement-message-view-model') || (node.tagName === 'YTD-ENFORCEMENT-MESSAGE-VIEW-MODEL' ? node : null);
-
         if (enforcementMessage) {
             const popupContainer = enforcementMessage.closest('ytd-popup-container');
             if (popupContainer) {
                 popupContainer.remove();
-                
+                document.documentElement.style.overflow = '';
+                document.body.style.overflow = '';
                 setTimeout(() => {
                     const mainVideo = document.querySelector('video.html5-main-video');
                     if (mainVideo && mainVideo.paused) {
@@ -99,41 +92,53 @@
         }
     };
 
-    const safeResumeAfterAd = () => {
-        if (!adJustSkipped) return;
-
-        const video = document.querySelector('video.html5-main-video');
-        const player = document.querySelector('#movie_player');
+    const initializePlayer = (video) => {
+        if (!video.src || video.src === lastProcessedVideoSrc) {
+            return;
+        }
         
-        if (video && player && !player.classList.contains('ad-interrupting')) {
-            if (video.paused) {
+        lastProcessedVideoSrc = video.src;
+
+        const guardianInterval = setInterval(() => {
+            const player = video.closest('#movie_player');
+            if (!player || video.currentTime > 4 || video.src !== lastProcessedVideoSrc) {
+                clearInterval(guardianInterval);
+                return;
+            }
+            const isAdPlaying = player.classList.contains('ad-interrupting');
+            const isPausedByUser = player.classList.contains('paused-by-user');
+            
+            if (video.paused && !isAdPlaying && !isPausedByUser) {
                 video.play();
             }
-            adJustSkipped = false;
+        }, 200);
+    };
+
+    const mainLoop = () => {
+        handleVideoAds();
+        const video = document.querySelector('video.html5-main-video');
+        if (video) {
+            initializePlayer(video);
+        } else {
+            lastProcessedVideoSrc = null;
         }
     };
 
     const initialize = () => {
         hideStaticAds();
-        setInterval(() => {
-            handleVideoAds();
-            safeResumeAfterAd();
-        }, CONFIG.FALLBACK_INTERVAL_MS);
-
-        const observer = new MutationObserver(mutations => {
+        const observer = new MutationObserver((mutations) => {
+            mainLoop();
             for (const mutation of mutations) {
-                handleVideoAds();
                 if (mutation.addedNodes) {
                     mutation.addedNodes.forEach(handleAntiAdBlockPopup);
                 }
             }
-            safeResumeAfterAd();
         });
-
         observer.observe(document.documentElement, {
             childList: true,
             subtree: true
         });
+        setInterval(mainLoop, CONFIG.FALLBACK_INTERVAL_MS);
     };
 
     if (document.readyState === 'loading') {
