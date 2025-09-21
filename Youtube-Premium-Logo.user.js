@@ -1,9 +1,9 @@
 // ==UserScript==
-// @name         Youtube Premium Logo
+// @name          Youtube Premium Logo
 // @namespace     https://github.com/chokiproai/Youtube-Premium
 // @description	  Changer For Youtube To Premium
-// @author       Chokiproai
-// @icon         https://www.google.com/s2/favicons?domain=youtube.com
+// @author        Chokiproai
+// @icon          https://www.google.com/s2/favicons?sz=64&domain=YouTube.com
 // @license       MIT
 
 // YouTube
