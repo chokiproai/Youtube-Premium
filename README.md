@@ -1,44 +1,91 @@
-# YouTube Premium Logo
+<div align="center">
 
-> [!NOTE]
-> YouTube Premium logo if you are signed out.
+![YouTube Premium](https://img.shields.io/badge/YouTube-Premium-FF0000?style=for-the-badge&logo=youtube&logoColor=white)
 
-## Settings
+# YouTube Premium Tools
+**User scripts to enhance your YouTube experience**
 
-> [!NOTE]
-> Please note that you will need the user script manager to run user scripts. Consider using one of the following browsers:
-> - Chrome[-ium] (Edge, Brave, Arc, etc.): [Tampermonkey (RECOMMENDED)](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo) or [ViolentMonkey](https://chrome.google.com/webstore/detail/violent-monkey/jinjaccalgkegednnccohejagnlnfdag)
-> - Firefox: [Tampermonkey (RECOMMENDED)](https://addons.mozilla.org/firefox/addon/tampermonkey/), [Greasemonkey](https://addons.mozilla.org/firefox/addon/greasemonkey/), or [ViolentMonkey](https://addons.mozilla.org/firefox/addon/violentmonkey/)
->
-> Starting with Manifest v3 on Chrome[-ium], you need to enable "Developer Mode" at chrome://extensions/
->
-> See also: [Chrome for Developers article](https://developer.chrome.com/docs/extensions/reference/api/userScripts) and [Tampermonkey FAQ](https://www.tampermonkey.net/faq.php#Q209)
+</div>
 
 ---
 
-## YouTube + Music Premium Logo
-
-### Before - YouTube Normal Logo
-![Before - YouTube Normal Logo](Docs/yb.png)
-
-### After - YouTube Premium Logo
-![After - YouTube Premium Logo](Docs/yb%20pre.png)
-
-### Before - YouTube Music Normal Logo:
-![Before - YouTube Music Normal Logo](Docs/yb%20music.png)
-
-### After - YouTube Music Premium Logo:
-![After - YouTube Music Premium Logo](Docs/yb%20music%20pre.png)
-
-To install the script, click the following link:
-### [Install Logo Script](https://github.com/chokiproai/Youtube-Premium/raw/refs/heads/main/Youtube-Premium-Logo.user.js)
+> [!NOTE]
+> The YouTube Premium logo will appear when you **are not logged in**.
 
 ---
 
-## YouTube + Music Premium ADB
+## ⚙️ Requirements — User Script Manager
+
+> [!IMPORTANT]
+> You need to install a **user script manager** before using. Recommended:
+
+| Browser | ⭐ Recommended | Others |
+|:---:|:---:|:---:|
+| **Chrome / Edge / Brave / Arc** | [Tampermonkey](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo) | [ViolentMonkey](https://chrome.google.com/webstore/detail/violent-monkey/jinjaccalgkegednnccohejagnlnfdag) |
+| **Firefox** | [Tampermonkey](https://addons.mozilla.org/firefox/addon/tampermonkey/) | [Greasemonkey](https://addons.mozilla.org/firefox/addon/greasemonkey/) · [ViolentMonkey](https://addons.mozilla.org/firefox/addon/violentmonkey/) |
+
+> [!WARNING]
+> With **Chrome Manifest v3**, you need to enable **Developer Mode** at `chrome://extensions/`
+> → See more: [Chrome for Developers](https://developer.chrome.com/docs/extensions/reference/api/userScripts) · [Tampermonkey FAQ](https://www.tampermonkey.net/faq.php#Q209)
+
+---
+
+## 🎨 Script 1 — YouTube + Music Premium Logo
+
+<table>
+  <thead>
+    <tr>
+      <th align="center">⬛ Before</th>
+      <th align="center">🟥 After (Premium)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td align="center">
+        <b>YouTube — normal logo</b><br><br>
+        <img src="Docs/yb.png" alt="YouTube Normal Logo" width="300"/>
+      </td>
+      <td align="center">
+        <b>YouTube — Premium logo</b><br><br>
+        <img src="Docs/yb pre.png" alt="YouTube Premium Logo" width="300"/>
+      </td>
+    </tr>
+    <tr>
+      <td align="center">
+        <b>Music — normal logo</b><br><br>
+        <img src="Docs/yb music.png" alt="YouTube Music Normal" width="300"/>
+      </td>
+      <td align="center">
+        <b>Music — Premium logo</b><br><br>
+        <img src="Docs/yb music pre.png" alt="YouTube Music Premium" width="300"/>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<div align="center">
+
+[![Install Logo Script](https://img.shields.io/badge/⬇️%20Install-Logo%20Script-FF0000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/chokiproai/Youtube-Premium/raw/refs/heads/main/Youtube-Premium-Logo.user.js)
+
+</div>
+
+---
+
+## 🛡️ Script 2 — YouTube + Music Premium ADB
 
 > [!NOTE]
-> Uses [uBlock Origin](https://ublockorigin.com/) | [Chrome-ium](https://chromewebstore.google.com/detail/ublock-origin/cjpalhdlnbpafiamejdnhcphjbkeiagm) | [Firefox](https://addons.mozilla.org/en-US/firefox/addon/ublock-origin). For chrome-ium users, due to deprecated v2 manifest, use [uBO Lite](https://chromewebstore.google.com/detail/ublock-origin-lite/ddkjiahejlhfcafbddmgiahcphecmpfh) instead.
+> This script uses **uBlock Origin** to block ads:
+> - **Chrome / Brave / Edge / Arc:** [uBlock Origin](https://chromewebstore.google.com/detail/ublock-origin/cjpalhdlnbpafiamejdnhcphjbkeiagm) — due to Manifest v3 deprecation, use [uBO Lite](https://chromewebstore.google.com/detail/ublock-origin-lite/ddkjiahejlhfcafbddmgiahcphecmpfh) as an alternative
+> - **Firefox:** [uBlock Origin](https://addons.mozilla.org/en-US/firefox/addon/ublock-origin)
 
-To install the script, click the following link:
-### [Install ADB Script](https://github.com/chokiproai/Youtube-Premium/raw/refs/heads/main/Youtube-Premium-ADB.user.js)
+<div align="center">
+
+[![Install ADB Script](https://img.shields.io/badge/⬇️%20Install-ADB%20Script-FF0000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/chokiproai/Youtube-Premium/raw/refs/heads/main/Youtube-Premium-ADB.user.js)
+
+</div>
+
+---
+
+<div align="center">
+  <sub>Made with ❤️ by <a href="https://github.com/chokiproai">chokiproai</a></sub>
+</div>
